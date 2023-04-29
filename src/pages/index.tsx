@@ -15,6 +15,7 @@ const Home = () => {
   ]);
 
   const [turnColor, setTurnColor] = useState(1);
+  const [passCount, setPassCount] = useState(0);
 
   const countColor = (color: number) => {
     let i = 0;
@@ -33,6 +34,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y - j][x] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -47,6 +49,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y + j][x] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -61,6 +64,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y][x - j] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -75,6 +79,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y][x + j] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -89,6 +94,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y - j][x - j] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -103,6 +109,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y + j][x + j] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -117,6 +124,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y - j][x + j] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -131,6 +139,7 @@ const Home = () => {
           if (i !== 1) {
             newBoard[y + j][x - j] = turnColor;
             setTurnColor(3 - turnColor);
+            setPassCount(0);
           }
         }
         break;
@@ -143,6 +152,30 @@ const Home = () => {
 
   const changeTurn = () => {
     setTurnColor(3 - turnColor);
+    setPassCount(passCount + 1);
+    if (
+      passCount > 0 &&
+      confirm(
+        `ゲームが終了しました！\n${
+          winner() === 0 ? '勝負は引き分けです' : `勝者は${winner() === 1 ? '黒' : '白'}です`
+        }\nゲームを終了しますか?`
+      )
+    ) {
+      resetGame;
+    }
+    console.log(passCount);
+  };
+
+  const winner = () => {
+    const c1 = countColor(1);
+    const c2 = countColor(2);
+    if (c1 === c2) {
+      return 0;
+    } else if (c1 > c2) {
+      return 1;
+    } else {
+      return 2;
+    }
   };
 
   const resetGame = () => {
@@ -157,16 +190,21 @@ const Home = () => {
       [0, 0, 0, 0, 0, 0, 0, 0],
     ];
     setBoard(newBoard);
+    setPassCount(0);
+    setTurnColor(1);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.board}>
         {board.map((row, y) =>
-          row.map((cell, x) => (
+          row.map((color, x) => (
             <div className={styles.cell} key={`${x}_${y}`} onClick={() => clickCell(x, y)}>
-              {cell !== 0 && (
-                <div className={styles.disc} style={{ background: cell === 1 ? '#000' : '#fff' }} />
+              {color !== 0 && (
+                <div
+                  className={styles.disc}
+                  style={{ background: color === 1 ? '#000' : '#fff' }}
+                />
               )}
             </div>
           ))
