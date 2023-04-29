@@ -2,8 +2,7 @@ import { useState } from 'react';
 import styles from './index.module.css';
 
 const Home = () => {
-  // prettier-ignore
-  const [board, setBoard] = useState([
+  const defaultBoard = [
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
@@ -11,8 +10,10 @@ const Home = () => {
     [0, 0, 0, 2, 1, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0]
-  ]);
+    [0, 0, 0, 0, 0, 0, 0, 0],
+  ];
+  // prettier-ignore
+  const [board, setBoard] = useState(defaultBoard);
 
   const [turnColor, setTurnColor] = useState(1);
   const [passCount, setPassCount] = useState(0);
@@ -179,16 +180,7 @@ const Home = () => {
   };
 
   const resetGame = () => {
-    const newBoard = [
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 1, 2, 0, 0, 0],
-      [0, 0, 0, 2, 1, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-    ];
+    const newBoard = defaultBoard;
     setBoard(newBoard);
     setPassCount(0);
     setTurnColor(1);
