@@ -16,10 +16,18 @@ const Home = () => {
 
   const [turnColor, setTurnColor] = useState(1);
 
+  const countColor = (color: number) => {
+    let i = 0;
+    board.forEach((array) => {
+      i += array.filter((n) => n === color).length;
+    });
+    return i;
+  };
+
   const clickCell = (x: number, y: number) => {
     const newBoard = JSON.parse(JSON.stringify(board));
     // 上方
-    for (let i = 1; i < y; i++) {
+    for (let i = 1; i <= y; i++) {
       if (board[y - i][x] === turnColor && board[y][x] === 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
@@ -47,7 +55,7 @@ const Home = () => {
       }
     }
     // 左方
-    for (let i = 1; i < x; i++) {
+    for (let i = 1; i <= x; i++) {
       if (board[y][x - i] === turnColor && board[y][x] === 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
@@ -89,7 +97,7 @@ const Home = () => {
       }
     }
     // 右下
-    for (let i = 1; i < Math.min(8 - x, 8 - y); i++) {
+    for (let i = 1; i <= Math.min(7 - x, 7 - y); i++) {
       if (board[y + i][x + i] === turnColor && board[y][x] === 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
@@ -103,7 +111,7 @@ const Home = () => {
       }
     }
     // 右上
-    for (let i = 1; i < Math.min(8 - x, y); i++) {
+    for (let i = 1; i <= Math.min(7 - x, y); i++) {
       if (board[y - i][x + i] === turnColor && board[y][x] === 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
@@ -117,7 +125,7 @@ const Home = () => {
       }
     }
     // 左下
-    for (let i = 1; i < Math.min(x, 8 - y); i++) {
+    for (let i = 1; i <= Math.min(x, 7 - y); i++) {
       if (board[y + i][x - i] === turnColor && board[y][x] === 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
@@ -130,6 +138,24 @@ const Home = () => {
         break;
       }
     }
+    setBoard(newBoard);
+  };
+
+  const changeTurn = () => {
+    setTurnColor(3 - turnColor);
+  };
+
+  const resetGame = () => {
+    const newBoard = [
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 1, 2, 0, 0, 0],
+      [0, 0, 0, 2, 1, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ];
     setBoard(newBoard);
   };
 
@@ -146,6 +172,12 @@ const Home = () => {
           ))
         )}
       </div>
+      <p>今のターンは{turnColor - 1 ? '白' : '黒'}です</p>
+      <p>
+        黒: {countColor(1)} 白: {countColor(2)}
+      </p>
+      <button onClick={changeTurn}>パス</button>
+      <button onClick={resetGame}>リセットゲーム</button>
     </div>
   );
 };
