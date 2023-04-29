@@ -26,11 +26,48 @@ const Home = () => {
     return i;
   };
 
+  const checkCanPlace = (
+    x: number,
+    y: number,
+    dirList: Array<Array<number>>,
+    board: Array<Array<number>>
+  ) => {
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 8; j++) {
+        for (const dir of dirList) {
+          const n = Math.min(
+            Math.max(-x * dir[0], (7 - x) * dir[0]),
+            Math.max(-y * dir[1], (7 - y) * dir[1])
+          );
+          for (let k = 1; k <= n; i++) {
+            if (board[y + k * dir[1]][x + k * dir[0]] === 1 && board[y][x] <= 0 && n !== 0) {
+              board[j][i] = -1;
+              break;
+            } else if (board[y + k * dir[1]][x + k * dir[0]] <= 0) {
+              break;
+            }
+          }
+        }
+      }
+    }
+    return board;
+  };
+
   const clickCell = (x: number, y: number) => {
     const newBoard = JSON.parse(JSON.stringify(board));
+    const dirList: Array<Array<number>> = [
+      [0, -1],
+      [1, 0],
+      [0, 1],
+      [-1, 0],
+      [-1, -1],
+      [1, -1],
+      [1, 1],
+      [-1, 1],
+    ];
     // 上方
     for (let i = 1; i <= y; i++) {
-      if (board[y - i][x] === turnColor && board[y][x] === 0) {
+      if (board[y - i][x] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y - j][x] = turnColor;
@@ -39,13 +76,13 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y - i][x] === 0) {
+      } else if (board[y - i][x] <= 0) {
         break;
       }
     }
     // 下方
     for (let i = 1; i < 8 - y; i++) {
-      if (board[y + i][x] === turnColor && board[y][x] === 0) {
+      if (board[y + i][x] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y + j][x] = turnColor;
@@ -54,13 +91,13 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y + i][x] === 0) {
+      } else if (board[y + i][x] <= 0) {
         break;
       }
     }
     // 左方
     for (let i = 1; i <= x; i++) {
-      if (board[y][x - i] === turnColor && board[y][x] === 0) {
+      if (board[y][x - i] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y][x - j] = turnColor;
@@ -69,13 +106,13 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y][x - i] === 0) {
+      } else if (board[y][x - i] <= 0) {
         break;
       }
     }
     // 右方
     for (let i = 1; i < 8 - x; i++) {
-      if (board[y][x + i] === turnColor && board[y][x] === 0) {
+      if (board[y][x + i] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y][x + j] = turnColor;
@@ -84,13 +121,13 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y][x + i] === 0) {
+      } else if (board[y][x + i] <= 0) {
         break;
       }
     }
     // 左上
     for (let i = 1; i < Math.min(x, y); i++) {
-      if (board[y - i][x - i] === turnColor && board[y][x] === 0) {
+      if (board[y - i][x - i] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y - j][x - j] = turnColor;
@@ -99,13 +136,13 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y - i][x - i] === 0) {
+      } else if (board[y - i][x - i] <= 0) {
         break;
       }
     }
     // 右下
     for (let i = 1; i <= Math.min(7 - x, 7 - y); i++) {
-      if (board[y + i][x + i] === turnColor && board[y][x] === 0) {
+      if (board[y + i][x + i] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y + j][x + j] = turnColor;
@@ -114,13 +151,13 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y + i][x + i] === 0) {
+      } else if (board[y + i][x + i] <= 0) {
         break;
       }
     }
     // 右上
     for (let i = 1; i <= Math.min(7 - x, y); i++) {
-      if (board[y - i][x + i] === turnColor && board[y][x] === 0) {
+      if (board[y - i][x + i] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y - j][x + j] = turnColor;
@@ -129,13 +166,13 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y - i][x + i] === 0) {
+      } else if (board[y - i][x + i] <= 0) {
         break;
       }
     }
     // 左下
     for (let i = 1; i <= Math.min(x, 7 - y); i++) {
-      if (board[y + i][x - i] === turnColor && board[y][x] === 0) {
+      if (board[y + i][x - i] === turnColor && board[y][x] <= 0) {
         for (let j = 0; j < i; j++) {
           if (i !== 1) {
             newBoard[y + j][x - j] = turnColor;
@@ -144,11 +181,11 @@ const Home = () => {
           }
         }
         break;
-      } else if (board[y + i][x - i] === 0) {
+      } else if (board[y + i][x - i] <= 0) {
         break;
       }
     }
-    setBoard(newBoard);
+    setBoard(checkCanPlace(x, y, dirList, newBoard));
   };
 
   const changeTurn = () => {
@@ -191,13 +228,19 @@ const Home = () => {
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((color, x) => (
-            <div className={styles.cell} key={`${x}_${y}`} onClick={() => clickCell(x, y)}>
+            <div
+              className={styles.cell}
+              key={`${x}_${y}`}
+              style={{ backgroundColor: color === -1 ? '#ff0' : '#0000' }}
+              onClick={() => clickCell(x, y)}
+            >
               {color !== 0 && (
                 <div
                   className={styles.disc}
                   style={{ background: color === 1 ? '#000' : '#fff' }}
                 />
               )}
+              {color}
             </div>
           ))
         )}
