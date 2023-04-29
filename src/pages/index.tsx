@@ -26,28 +26,34 @@ const Home = () => {
     return i;
   };
 
-  const checkCanPlace = (
+  const checkCanPlace = (i: number, x1: number, y1: number, dirList: Array<Array<number>>) => {
+    const x2 = i % 8;
+    const y2 = (i - (i % 8)) / 8;
+    for (const dir of dirList) {
+      const n = Math.min(
+        Math.max(-x1 * dir[0], (7 - x1) * dir[0]),
+        Math.max(-y1 * dir[1], (7 - y1) * dir[1])
+      );
+      for (let k = 1; k <= n; i++) {
+        if (board[y1 + k * dir[1]][x1 + k * dir[0]] === 1 && board[y1][x1] <= 0 && n !== 0) {
+          board[y2][x2] = -1;
+          return true;
+        } else if (board[y1 + k * dir[1]][x1 + k * dir[0]] <= 0) {
+          return true;
+        }
+      }
+    }
+  };
+
+  const checkCanPlaceAll = (
     x: number,
     y: number,
     dirList: Array<Array<number>>,
     board: Array<Array<number>>
   ) => {
-    for (let i = 0; i < 8; i++) {
-      for (let j = 0; j < 8; j++) {
-        for (const dir of dirList) {
-          const n = Math.min(
-            Math.max(-x * dir[0], (7 - x) * dir[0]),
-            Math.max(-y * dir[1], (7 - y) * dir[1])
-          );
-          for (let k = 1; k <= n; i++) {
-            if (board[y + k * dir[1]][x + k * dir[0]] === 1 && board[y][x] <= 0 && n !== 0) {
-              board[j][i] = -1;
-              break;
-            } else if (board[y + k * dir[1]][x + k * dir[0]] <= 0) {
-              break;
-            }
-          }
-        }
+    for (let i = 0; i < 64; i++) {
+      if (checkCanPlace(i, x, y, dirList)) {
+        break;
       }
     }
     return board;
@@ -185,7 +191,7 @@ const Home = () => {
         break;
       }
     }
-    setBoard(checkCanPlace(x, y, dirList, newBoard));
+    setBoard(checkCanPlaceAll(x, y, dirList, newBoard));
   };
 
   const changeTurn = () => {
