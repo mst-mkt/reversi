@@ -2,21 +2,64 @@ import { useState } from 'react';
 import styles from './index.module.css';
 
 const Home = () => {
-  const defaultBoard = [
+  const defaultBoard: Array<Array<number>> = [
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 1, 2, 0, 0, 0],
-    [0, 0, 0, 2, 1, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, -1, 0, 0, 0],
+    [0, 0, 0, 1, 2, -1, 0, 0],
+    [0, 0, -1, 2, 1, 0, 0, 0],
+    [0, 0, 0, -1, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
   ];
-  // prettier-ignore
-  const [board, setBoard] = useState(defaultBoard);
 
+  const dirList: Array<Array<number>> = [
+    // 八方を-1,0,1で表現
+    [0, -1],
+    [1, 0],
+    [0, 1],
+    [-1, 0],
+    [-1, -1],
+    [1, -1],
+    [1, 1],
+    [-1, 1],
+  ];
+
+  const [board, setBoard] = useState(defaultBoard);
   const [turnColor, setTurnColor] = useState(1);
   const [passCount, setPassCount] = useState(0);
+
+  const reverseDisc = (x: number, y: number, nBoard: number[][]) => {
+    for (const dir of dirList) {
+      const terms =
+        dir[0] === 0 || dir[1] === 0
+          ? Math.max(
+              Math.max(-x * dir[0], (7 - x) * dir[0]),
+              Math.max(-y * dir[1], (7 - y) * dir[1])
+            )
+          : Math.min(
+              Math.max(-x * dir[0], (7 - x) * dir[0]),
+              Math.max(-y * dir[1], (7 - y) * dir[1])
+            );
+      console.log(terms);
+      for (let i = 1; i < terms; i++) {
+        if (i >= 2 && board[y + i * dir[1]][x + i * dir[0]] === turnColor) {
+          // 2以上進んでかつ同じ色が来たら止める
+          for (let j = 0; j <= i; j++) {
+            nBoard[y + j * dir[1]][x + j * dir[0]] = turnColor;
+          }
+          setTurnColor(3 - turnColor);
+          setPassCount(0);
+          break;
+        } else if (board[y + i * dir[1]][x + i * dir[0]] <= 0) {
+          // 何も石がないマスに来たら止まる
+          break;
+        }
+        // 自分と違う色なら繰り返す
+      }
+    }
+    return nBoard;
+  };
 
   const countColor = (color: number) => {
     let i = 0;
@@ -26,172 +69,10 @@ const Home = () => {
     return i;
   };
 
-  const checkCanPlace = (i: number, x1: number, y1: number, dirList: Array<Array<number>>) => {
-    const x2 = i % 8;
-    const y2 = (i - (i % 8)) / 8;
-    for (const dir of dirList) {
-      const n = Math.min(
-        Math.max(-x1 * dir[0], (7 - x1) * dir[0]),
-        Math.max(-y1 * dir[1], (7 - y1) * dir[1])
-      );
-      for (let k = 1; k <= n; i++) {
-        if (board[y1 + k * dir[1]][x1 + k * dir[0]] === 1 && board[y1][x1] <= 0 && n !== 0) {
-          board[y2][x2] = -1;
-          return true;
-        } else if (board[y1 + k * dir[1]][x1 + k * dir[0]] <= 0) {
-          return true;
-        }
-      }
-    }
-  };
-
-  const checkCanPlaceAll = (
-    x: number,
-    y: number,
-    dirList: Array<Array<number>>,
-    board: Array<Array<number>>
-  ) => {
-    for (let i = 0; i < 64; i++) {
-      if (checkCanPlace(i, x, y, dirList)) {
-        break;
-      }
-    }
-    return board;
-  };
-
-  const clickCell = (x: number, y: number) => {
-    const newBoard = JSON.parse(JSON.stringify(board));
-    const dirList: Array<Array<number>> = [
-      [0, -1],
-      [1, 0],
-      [0, 1],
-      [-1, 0],
-      [-1, -1],
-      [1, -1],
-      [1, 1],
-      [-1, 1],
-    ];
-    // 上方
-    for (let i = 1; i <= y; i++) {
-      if (board[y - i][x] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y - j][x] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y - i][x] <= 0) {
-        break;
-      }
-    }
-    // 下方
-    for (let i = 1; i < 8 - y; i++) {
-      if (board[y + i][x] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y + j][x] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y + i][x] <= 0) {
-        break;
-      }
-    }
-    // 左方
-    for (let i = 1; i <= x; i++) {
-      if (board[y][x - i] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y][x - j] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y][x - i] <= 0) {
-        break;
-      }
-    }
-    // 右方
-    for (let i = 1; i < 8 - x; i++) {
-      if (board[y][x + i] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y][x + j] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y][x + i] <= 0) {
-        break;
-      }
-    }
-    // 左上
-    for (let i = 1; i < Math.min(x, y); i++) {
-      if (board[y - i][x - i] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y - j][x - j] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y - i][x - i] <= 0) {
-        break;
-      }
-    }
-    // 右下
-    for (let i = 1; i <= Math.min(7 - x, 7 - y); i++) {
-      if (board[y + i][x + i] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y + j][x + j] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y + i][x + i] <= 0) {
-        break;
-      }
-    }
-    // 右上
-    for (let i = 1; i <= Math.min(7 - x, y); i++) {
-      if (board[y - i][x + i] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y - j][x + j] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y - i][x + i] <= 0) {
-        break;
-      }
-    }
-    // 左下
-    for (let i = 1; i <= Math.min(x, 7 - y); i++) {
-      if (board[y + i][x - i] === turnColor && board[y][x] <= 0) {
-        for (let j = 0; j < i; j++) {
-          if (i !== 1) {
-            newBoard[y + j][x - j] = turnColor;
-            setTurnColor(3 - turnColor);
-            setPassCount(0);
-          }
-        }
-        break;
-      } else if (board[y + i][x - i] <= 0) {
-        break;
-      }
-    }
-    setBoard(checkCanPlaceAll(x, y, dirList, newBoard));
+  const resetGame = () => {
+    setBoard(defaultBoard);
+    setPassCount(0);
+    setTurnColor(1);
   };
 
   const changeTurn = () => {
@@ -207,7 +88,6 @@ const Home = () => {
     ) {
       resetGame;
     }
-    console.log(passCount);
   };
 
   const winner = () => {
@@ -222,11 +102,46 @@ const Home = () => {
     }
   };
 
-  const resetGame = () => {
-    const newBoard = defaultBoard;
-    setBoard(newBoard);
-    setPassCount(0);
-    setTurnColor(1);
+  const checkCanPut = (nBoard: number[][]) => {
+    for (let i = 0; i < 64; i++) {
+      const newBoard: Array<Array<number>> = JSON.parse(JSON.stringify(board));
+      const x: number = i % 8;
+      const y: number = (i - (i % 8)) / 8;
+      for (const dir of dirList) {
+        const terms =
+          dir[0] === 0 || dir[1] === 0
+            ? Math.max(
+                Math.max(-x * dir[0], (7 - x) * dir[0]),
+                Math.max(-y * dir[1], (7 - y) * dir[1])
+              )
+            : Math.min(
+                Math.max(-x * dir[0], (7 - x) * dir[0]),
+                Math.max(-y * dir[1], (7 - y) * dir[1])
+              );
+        console.log(terms);
+        for (let i = 1; i < terms; i++) {
+          if (i >= 2 && board[y + i * dir[1]][x + i * dir[0]] === turnColor) {
+            // 2以上進んでかつ同じ色が来たら止める
+            newBoard[x][y] = -1;
+            break;
+          } else if (board[y + i * dir[1]][x + i * dir[0]] <= 0) {
+            // 何も石がないマスに来たら止まる
+            break;
+          }
+          // 自分と違う色なら繰り返す
+        }
+      }
+    }
+    return nBoard;
+  };
+
+  const clickCell = (x: number, y: number) => {
+    let newBoard: Array<Array<number>> = JSON.parse(JSON.stringify(board));
+    if (board[y][x] === -1) {
+      newBoard = reverseDisc(x, y, newBoard);
+      newBoard = checkCanPut(newBoard);
+      setBoard(newBoard);
+    }
   };
 
   return (
@@ -237,13 +152,13 @@ const Home = () => {
             <div
               className={styles.cell}
               key={`${x}_${y}`}
-              style={{ backgroundColor: color === -1 ? '#ff0' : '#0000' }}
+              style={{ borderColor: color === -1 ? '#ff0' : '#000' }}
               onClick={() => clickCell(x, y)}
             >
-              {color !== 0 && (
+              {color > 0 && (
                 <div
                   className={styles.disc}
-                  style={{ background: color === 1 ? '#000' : '#fff' }}
+                  style={{ backgroundColor: color === 1 ? '#000' : '#fff' }}
                 />
               )}
               {color}
