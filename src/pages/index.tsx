@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './index.module.css';
 
 const Home = () => {
-  const defaultBoard: Array<Array<number>> = [
+  const defaultBoard: number[][] = [
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, 0, 0, 0, 0],
     [0, 0, 0, 0, -1, 0, 0, 0],
@@ -13,7 +13,7 @@ const Home = () => {
     [0, 0, 0, 0, 0, 0, 0, 0],
   ];
 
-  const dirList: Array<Array<number>> = [
+  const dirList: number[][] = [
     // 八方を-1,0,1で表現
     [0, -1],
     [1, 0],
@@ -41,8 +41,7 @@ const Home = () => {
               Math.max(-x * dir[0], (7 - x) * dir[0]),
               Math.max(-y * dir[1], (7 - y) * dir[1])
             );
-      console.log(terms);
-      for (let i = 1; i < terms; i++) {
+      for (let i = 1; i <= terms && board[y][x] <= 0; i++) {
         if (i >= 2 && board[y + i * dir[1]][x + i * dir[0]] === turnColor) {
           // 2以上進んでかつ同じ色が来たら止める
           for (let j = 0; j <= i; j++) {
@@ -51,14 +50,16 @@ const Home = () => {
           setTurnColor(3 - turnColor);
           setPassCount(0);
           break;
-        } else if (board[y + i * dir[1]][x + i * dir[0]] <= 0) {
+        } else if (
+          board[y + i * dir[1]][x + i * dir[0]] <= 0 ||
+          (i === 1 && board[y + 1 * dir[1]][x + 1 * dir[0]] === turnColor)
+        ) {
           // 何も石がないマスに来たら止まる
           break;
         }
         // 自分と違う色なら繰り返す
       }
     }
-    return nBoard;
   };
 
   const countColor = (color: number) => {
@@ -86,7 +87,7 @@ const Home = () => {
         }\nゲームを終了しますか?`
       )
     ) {
-      resetGame;
+      resetGame();
     }
   };
 
@@ -104,13 +105,16 @@ const Home = () => {
 
   const checkCanPut = (nBoard: number[][]) => {
     for (let i = 0; i < 64; i++) {
-      const newBoard: Array<Array<number>> = JSON.parse(JSON.stringify(board));
       const x: number = i % 8;
       const y: number = (i - (i % 8)) / 8;
+      if (nBoard[y][x] === -1) {
+        nBoard[y][x] = 0;
+      }
       for (const dir of dirList) {
         const terms =
           dir[0] === 0 || dir[1] === 0
-            ? Math.max(
+            ? // 各方向に何マス進めるか
+              Math.max(
                 Math.max(-x * dir[0], (7 - x) * dir[0]),
                 Math.max(-y * dir[1], (7 - y) * dir[1])
               )
@@ -118,14 +122,18 @@ const Home = () => {
                 Math.max(-x * dir[0], (7 - x) * dir[0]),
                 Math.max(-y * dir[1], (7 - y) * dir[1])
               );
-        console.log(terms);
-        for (let i = 1; i < terms; i++) {
+        for (let i = 1; i <= terms && board[y][x] <= 0; i++) {
           if (i >= 2 && board[y + i * dir[1]][x + i * dir[0]] === turnColor) {
             // 2以上進んでかつ同じ色が来たら止める
-            newBoard[x][y] = -1;
+            nBoard[y][x] = -1;
+            console.log(turnColor);
             break;
-          } else if (board[y + i * dir[1]][x + i * dir[0]] <= 0) {
-            // 何も石がないマスに来たら止まる
+          } else if (
+            board[y + i * dir[1]][x + i * dir[0]] <= 0 ||
+            (board[y + dir[1]][x + dir[0]] === turnColor && i === 1)
+          ) {
+            // 何も石がないマスに来たら止まる または
+            // 1回目に同じ色が来たら止める
             break;
           }
           // 自分と違う色なら繰り返す
@@ -136,12 +144,10 @@ const Home = () => {
   };
 
   const clickCell = (x: number, y: number) => {
-    let newBoard: Array<Array<number>> = JSON.parse(JSON.stringify(board));
-    if (board[y][x] === -1) {
-      newBoard = reverseDisc(x, y, newBoard);
-      newBoard = checkCanPut(newBoard);
-      setBoard(newBoard);
-    }
+    const newBoard: number[][] = JSON.parse(JSON.stringify(board));
+    reverseDisc(x, y, newBoard);
+    // checkCanPut(newBoard);
+    setBoard(newBoard);
   };
 
   return (
@@ -152,7 +158,7 @@ const Home = () => {
             <div
               className={styles.cell}
               key={`${x}_${y}`}
-              style={{ borderColor: color === -1 ? '#ff0' : '#000' }}
+              style={{ backgroundColor: color === -1 ? '#ff0' : '#090' }}
               onClick={() => clickCell(x, y)}
             >
               {color > 0 && (
@@ -172,6 +178,9 @@ const Home = () => {
       </p>
       <button onClick={changeTurn}>パス</button>
       <button onClick={resetGame}>リセットゲーム</button>
+      <button onClick={() => setBoard(checkCanPut(JSON.parse(JSON.stringify(board))))}>
+        候補表示
+      </button>
     </div>
   );
 };
