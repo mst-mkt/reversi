@@ -165,65 +165,67 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <div className={styles.header__title}>
-          <h1>Reversi</h1>
-          <p>Created in INIAD Developers</p>
+      <div className={styles.layout}>
+        <div className={styles.board}>
+          {board.map((row, y) =>
+            row.map((color, x) => (
+              <div className={styles.cell} key={`${x}_${y}`} onClick={() => clickCell(x, y)}>
+                {color > 0 && (
+                  <div
+                    className={styles.disc}
+                    style={{ backgroundColor: color === 1 ? '#444' : '#fff' }}
+                  />
+                )}
+                {color === -1 && <div className={styles.suggest} />}
+              </div>
+            ))
+          )}
         </div>
-        <button className={styles.header__button} onClick={resetGame}>
-          <svg
-            strokeWidth="2"
-            stroke="currentColor"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" />
-            <path d="M20 4v5h-5" />
-          </svg>
-        </button>
-      </header>
-      <div className={styles.board}>
-        {board.map((row, y) =>
-          row.map((color, x) => (
-            <div className={styles.cell} key={`${x}_${y}`} onClick={() => clickCell(x, y)}>
-              {color > 0 && (
-                <div
-                  className={styles.disc}
-                  style={{ backgroundColor: color === 1 ? '#444' : '#fff' }}
-                />
-              )}
-              {color === -1 && <div className={styles.suggest} />}
+        <header className={styles.header}>
+          <div className={styles.header__title}>
+            <h1>Reversi</h1>
+            <p>Created in INIAD Developers</p>
+          </div>
+          <button className={styles.header__button} onClick={resetGame}>
+            <svg
+              strokeWidth="2"
+              stroke="currentColor"
+              fill="none"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+              <path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1 7.935 1.007 9.425 4.747" />
+              <path d="M20 4v5h-5" />
+            </svg>
+          </button>
+        </header>
+        <div className={styles.status}>
+          <div className={styles.status__content}>
+            <h2>TURN</h2>
+            <p>{turnColor - 1 ? '白' : '黒'}のターン</p>
+          </div>
+          <div className={styles.status__content}>
+            <h2>COUNT</h2>
+            <div />
+            <div>
+              <div className={`${styles['count__disc--black']} ${styles.count__disc}`} />
+              <span>{countColor(1, board)}</span>
             </div>
-          ))
-        )}
-      </div>
-      <div className={styles.status}>
-        <div className={styles.status__content}>
-          <h2>TURN</h2>
-          <p>{turnColor - 1 ? '白' : '黒'}のターン</p>
-        </div>
-        <div className={styles.status__content}>
-          <h2>COUNT</h2>
-          <div />
-          <div>
-            <div className={`${styles['count__disc--black']} ${styles.count__disc}`} />
-            <span>{countColor(1, board)}</span>
+            <div>
+              <div className={`${styles['count__disc--white']} ${styles.count__disc}`} />
+              <span>{countColor(2, board)}</span>
+            </div>
           </div>
-          <div>
-            <div className={`${styles['count__disc--white']} ${styles.count__disc}`} />
-            <span>{countColor(2, board)}</span>
-          </div>
-        </div>
-        <div className={styles.status__content}>
-          <h2>SCORE</h2>
-          <div className={styles.score}>
-            <div className={`${styles.score__disc} ${styles['score__disc--black']}`} />
-            <span className={styles.score__text}>
-              {winCount[0]} - {winCount[1]}
-            </span>
-            <div className={`${styles.score__disc} ${styles['score__disc--white']}`} />
+          <div className={styles.status__content}>
+            <h2>SCORE</h2>
+            <div className={styles.score}>
+              <div className={`${styles.score__disc} ${styles['score__disc--black']}`} />
+              <span className={styles.score__text}>
+                {winCount[0]} - {winCount[1]}
+              </span>
+              <div className={`${styles.score__disc} ${styles['score__disc--white']}`} />
+            </div>
           </div>
         </div>
       </div>
