@@ -184,7 +184,7 @@ const Home = () => {
         <header className={styles.header}>
           <div className={styles.header__title}>
             <h1>Reversi</h1>
-            <p>Created in INIAD Developers</p>
+            <p>Created at INIAD.ts</p>
           </div>
           <button className={styles.header__button} onClick={resetGame}>
             <svg
