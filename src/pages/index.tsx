@@ -55,6 +55,7 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
+      <p>{['白', '黒'][turnColor - 1]}のターン</p>
       <div className={styles.board}>
         {board.map((row, y) =>
           row.map((cell, x) => (
