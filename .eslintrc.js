@@ -38,8 +38,8 @@ module.exports = {
     '@typescript-eslint/no-non-null-assertion': 'error',
     '@typescript-eslint/strict-boolean-expressions': 'error',
     complexity: ['error', 1],
-    // 'max-depth': ['error', 2],
-    // 'max-nested-callbacks': ['error', 3],
-    // 'max-lines': ['error', 200],
+    'max-depth': ['error', 1],
+    'max-nested-callbacks': ['error', 3],
+    'max-lines': ['error', 200],
   },
 };
