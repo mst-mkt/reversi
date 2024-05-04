@@ -1,4 +1,5 @@
 import { Board } from '../components/Board/Board';
+import { Header } from '../components/Header/Header';
 import { useBoard } from '../hooks/useBoard';
 import styles from './index.module.css';
 import '@fontsource/manrope';
@@ -8,10 +9,7 @@ const Home = () => {
 
   return (
     <div className={styles.container}>
-      <p>{['白', '黒'][status.turnColor - 1]}のターン</p>
-      <p>
-        白: {status.count.white}, 黒: {status.count.black}
-      </p>
+      <Header />
       <Board board={board} handleCellClick={handleCellClick} />
     </div>
   );

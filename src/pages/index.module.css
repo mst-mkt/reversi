@@ -1,5 +1,12 @@
 .container {
   display: grid;
+  grid-template: 'board header' 'board status';
+  row-gap: 4svmin;
+  column-gap: 8svmin;
   place-content: center;
   min-height: 100svh;
+
+  @media screen and (aspect-ratio < 1.2) {
+    grid-template: 'header' 'board' 'status';
+  }
 }

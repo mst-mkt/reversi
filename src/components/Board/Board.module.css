@@ -1,5 +1,6 @@
 .board {
   display: grid;
+  grid-area: board;
   grid-template: repeat(8, 1fr) / repeat(8, 1fr);
   width: 80svmin;
   aspect-ratio: 1;
