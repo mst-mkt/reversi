@@ -6,20 +6,9 @@ type CellProps = {
   onClick: () => void;
 };
 
-export const Cell: FC<CellProps> = ({ cell, onClick }) => {
-  const discs = [
-    <></>,
-    <div
-      key={1}
-      className={styles.stone}
-      style={{ backgroundColor: ['white', 'black'][cell - 1] }}
-    />,
-    <div key={2}>can</div>,
-  ];
-
-  return (
-    <div className={styles.cell} onClick={onClick}>
-      {discs.at(Math.min(cell, 1))}
-    </div>
-  );
-};
+export const Cell: FC<CellProps> = ({ cell, onClick }) => (
+  <div className={`${styles.cell} ${['', styles.clickable][Math.max(-cell, 0)]}`} onClick={onClick}>
+    <div className={`${styles.stone} ${['', styles.black, styles.white][Math.max(cell, 0)]}`} />
+    <div className={styles.suggest} />
+  </div>
+);

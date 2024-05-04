@@ -3,6 +3,8 @@
   grid-template: repeat(8, 1fr) / repeat(8, 1fr);
   width: 80svmin;
   aspect-ratio: 1;
-  background-color: green;
-  border: solid 1px black;
+  overflow: hidden;
+  background-color: #d2e9ff99;
+  border-radius: 2svmin;
+  box-shadow: 0 0 0.5svmin #0002;
 }
