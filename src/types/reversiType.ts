@@ -16,3 +16,8 @@ export type Game = {
   handleCellClick: (position: Position) => void;
   resetGame: () => void;
 };
+
+export type PlaceHistory = {
+  color: number;
+  position: Position;
+};

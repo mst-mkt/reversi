@@ -1,6 +1,12 @@
 import { useCallback, useMemo, useState } from 'react';
 import { COLORS, DIRECTIONS, INITIAL_BOARD } from '../constants/defaultValues';
-import type { Board, Direction, Game, Position } from '../types/reversiType';
+import type { Board, Direction, Game, PlaceHistory, Position } from '../types/reversiType';
+
+const omitUndefinedFromNumber = (value: number | undefined, replaceValue: number) => {
+  return (
+    [...Array(value)].length * +Number.isFinite(value) + replaceValue * +!Number.isFinite(value)
+  );
+};
 
 const countPlaceableLength = (
   board: Board,
@@ -15,7 +21,7 @@ const countPlaceableLength = (
     .map((v) => Math.max(v, 0))
     .join('')
     .match(placeableRegex)?.[0]?.length;
-  const lengthOmitUndefined = [...Array(length)].length * +Number.isFinite(length);
+  const lengthOmitUndefined = omitUndefinedFromNumber(length, 0);
   return lengthOmitUndefined;
 };
 
@@ -55,11 +61,26 @@ const reverseDisc = (board: Board, { x, y }: Position, turnColor: number): Board
 };
 
 export const useBoard = (): Game => {
-  const [turnColor, setTurnColor] = useState(1);
-  const [board, setBoard] = useState(INITIAL_BOARD);
+  const [placeHistory, setPlaceHistory] = useState<PlaceHistory[]>([]);
 
-  const enemyTurnColor = useMemo(() => turnColor ^ 3, [turnColor]);
-  const checkedBoard = useMemo(() => applySuggest(board, turnColor), [board, turnColor]);
+  const board = useMemo(() => {
+    return placeHistory.reduce(
+      (acc, { color, position }) => reverseDisc(acc, position, color),
+      structuredClone(INITIAL_BOARD),
+    );
+  }, [placeHistory]);
+
+  const turnColor = useMemo(() => {
+    const lastTurn = placeHistory.at(-1)?.color;
+    const lastTurnOmitUndefined = omitUndefinedFromNumber(lastTurn, 2);
+    const lastEnemyTurn = lastTurnOmitUndefined ^ 3;
+    const suggestedBoard = applySuggest(board, lastEnemyTurn);
+    const shouldPass = suggestedBoard.flat().every((cell) => cell >= 0);
+    const nextTurnColor = lastEnemyTurn * +!shouldPass + lastTurnOmitUndefined * +shouldPass;
+    return nextTurnColor;
+  }, [placeHistory, board]);
+
+  const suggestedBoard = useMemo(() => applySuggest(board, turnColor), [board, turnColor]);
   const [whiteCount, blackCount] = useMemo(
     () => COLORS.map((color) => board.flat().filter((v) => v === color).length),
     [board],
@@ -75,27 +96,20 @@ export const useBoard = (): Game => {
   const checkFinishGame = useCallback(() => {
     const winnerNumber = +(blackCount >= whiteCount) + +(blackCount === whiteCount);
     const gameStatus = ['白の勝ち', '黒の勝ち', '引き分け'][winnerNumber];
-    const finishAlert = () => setTimeout(() => alert(`${gameStatus}です`), 10);
+    const finishAlert = () => setTimeout(() => alert(`${gameStatus}です`), 100);
     const actions = [undefined, finishAlert];
     actions[+isGameEnd]?.();
   }, [blackCount, whiteCount, isGameEnd]);
   const resetGame = useCallback(() => {
-    setTurnColor(1);
-    setBoard(INITIAL_BOARD);
+    setPlaceHistory([]);
   }, []);
 
   const handleCellClick = ({ x, y }: Position) => {
-    const canPlaceNumber = Math.max(-checkedBoard[y][x], 0);
+    const canPlaceNumber = Math.max(-suggestedBoard[y][x], 0);
     const actions = [
       () => {},
       () => {
-        const reversedBoard = reverseDisc(board, { x, y }, turnColor);
-        const suggestedBoard = applySuggest(reversedBoard, enemyTurnColor);
-        const shouldPass = suggestedBoard.flat().every((cell) => cell >= 0);
-        const nextTurnColor = enemyTurnColor * +!shouldPass + turnColor * +shouldPass;
-
-        setBoard(reversedBoard);
-        setTurnColor(nextTurnColor);
+        setPlaceHistory((prev) => [...prev, { color: turnColor, position: { x, y } }]);
       },
     ];
 
@@ -105,7 +119,7 @@ export const useBoard = (): Game => {
   checkFinishGame();
 
   return {
-    board: checkedBoard,
+    board: suggestedBoard,
     status: {
       turnColor,
       count: {
