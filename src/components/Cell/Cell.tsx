@@ -8,7 +8,7 @@ type CellProps = {
 
 export const Cell: FC<CellProps> = ({ cell, onClick }) => (
   <div className={`${styles.cell} ${['', styles.clickable][Math.max(-cell, 0)]}`} onClick={onClick}>
-    <div className={`${styles.stone} ${['', styles.black, styles.white][Math.max(cell, 0)]}`} />
+    <div className={`${styles.disc} ${['', styles.black, styles.white][Math.max(cell, 0)]}`} />
     <div className={styles.suggest} />
   </div>
 );
