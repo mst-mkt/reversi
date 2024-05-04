@@ -1,0 +1,51 @@
+.status {
+  display: flex;
+  flex-direction: column;
+  grid-area: status;
+  row-gap: 4svmin;
+  column-gap: 8svmin;
+
+  & > section {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2svmin;
+
+    & > h2 {
+      margin: 0;
+      font-size: 1.6svmin;
+      letter-spacing: 0.2svmin;
+    }
+
+    & > p {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4svmin;
+      margin: 0;
+      font-size: 2.4svmin;
+
+      & > span {
+        display: flex;
+        gap: 1svmin;
+        align-items: center;
+        font-size: 1.6svmin;
+
+        &::before {
+          display: block;
+          width: 2.4svmin;
+          aspect-ratio: 1;
+          content: '';
+          border: solid 1px #222;
+          border-radius: 50%;
+        }
+
+        &:last-child::before {
+          background-color: #222;
+        }
+      }
+    }
+  }
+
+  @media screen and (aspect-ratio < 1.2) {
+    flex-direction: row;
+  }
+}

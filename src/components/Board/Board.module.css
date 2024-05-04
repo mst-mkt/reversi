@@ -2,7 +2,7 @@
   display: grid;
   grid-area: board;
   grid-template: repeat(8, 1fr) / repeat(8, 1fr);
-  width: 80svmin;
+  width: min(60svh, 80svw);
   aspect-ratio: 1;
   overflow: hidden;
   background-color: #d2e9ff99;
