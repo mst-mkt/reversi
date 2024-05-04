@@ -6,11 +6,11 @@ import styles from './index.module.css';
 import '@fontsource/manrope';
 
 const Home = () => {
-  const { board, status, handleCellClick } = useBoard();
+  const { board, status, handleCellClick, resetGame } = useBoard();
 
   return (
     <div className={styles.container}>
-      <Header />
+      <Header resetGame={resetGame} />
       <Board board={board} handleCellClick={handleCellClick} />
       <Status {...status} />
     </div>

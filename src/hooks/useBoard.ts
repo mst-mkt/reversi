@@ -79,6 +79,10 @@ export const useBoard = (): Game => {
     const actions = [undefined, finishAlert];
     actions[+isGameEnd]?.();
   }, [blackCount, whiteCount, isGameEnd]);
+  const resetGame = useCallback(() => {
+    setTurnColor(1);
+    setBoard(INITIAL_BOARD);
+  }, []);
 
   const handleCellClick = ({ x, y }: Position) => {
     const canPlaceNumber = Math.max(-checkedBoard[y][x], 0);
@@ -110,5 +114,6 @@ export const useBoard = (): Game => {
       },
     },
     handleCellClick,
+    resetGame,
   };
 };
