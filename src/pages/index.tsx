@@ -1,6 +1,7 @@
 import { Board } from '../components/Board/Board';
 import { useBoard } from '../hooks/useBoard';
 import styles from './index.module.css';
+import '@fontsource/manrope';
 
 const Home = () => {
   const { board, status, handleCellClick } = useBoard();
