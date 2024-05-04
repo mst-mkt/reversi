@@ -75,8 +75,8 @@ export const useBoard = (): Game => {
   const checkFinishGame = useCallback(() => {
     const winnerNumber = +(blackCount >= whiteCount) + +(blackCount === whiteCount);
     const gameStatus = ['白の勝ち', '黒の勝ち', '引き分け'][winnerNumber];
-    const winnerAlert = () => alert(`${gameStatus}です`);
-    const actions = [undefined, winnerAlert];
+    const finishAlert = () => setTimeout(() => alert(`${gameStatus}です`), 10);
+    const actions = [undefined, finishAlert];
     actions[+isGameEnd]?.();
   }, [blackCount, whiteCount, isGameEnd]);
 
