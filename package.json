@@ -1,5 +1,5 @@
 {
-  "name": "next-ts-starter",
+  "name": "reversi",
   "version": "0.1.0",
   "private": true,
   "scripts": {
