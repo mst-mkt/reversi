@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { COLORS, DIRECTIONS, INITIAL_BOARD } from '../constants/defaultValues';
 import type { Board, Direction, Game, PlaceHistory, Position } from '../types/reversiType';
 
-const omitUndefinedFromNumber = (value: number | undefined, replaceValue: number) => {
+const omitUndefinedFromNumber = (value: number | undefined, replaceValue: number = 0) => {
   return (
     [...Array(value)].length * +Number.isFinite(value) + replaceValue * +!Number.isFinite(value)
   );
@@ -21,7 +21,7 @@ const countPlaceableLength = (
     .map((v) => Math.max(v, 0))
     .join('')
     .match(placeableRegex)?.[0]?.length;
-  const lengthOmitUndefined = omitUndefinedFromNumber(length, 0);
+  const lengthOmitUndefined = omitUndefinedFromNumber(length);
   return lengthOmitUndefined;
 };
 
