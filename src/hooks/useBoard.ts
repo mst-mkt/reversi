@@ -60,6 +60,8 @@ const reverseDisc = (board: Board, { x, y }: Position, turnColor: number): Board
   return replacedBoard;
 };
 
+const count = (board: Board, color: number) => board.flat().filter((v) => v === color).length;
+
 export const useBoard = (): Game => {
   const [placeHistory, setPlaceHistory] = useState<PlaceHistory[]>([]);
 
@@ -82,7 +84,7 @@ export const useBoard = (): Game => {
 
   const suggestedBoard = useMemo(() => applySuggest(board, turnColor), [board, turnColor]);
   const [whiteCount, blackCount] = useMemo(
-    () => COLORS.map((color) => board.flat().filter((v) => v === color).length),
+    () => COLORS.map((color) => count(board, color)),
     [board],
   );
   const isGameEnd = useMemo(
